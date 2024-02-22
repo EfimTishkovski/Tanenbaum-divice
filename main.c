@@ -6,7 +6,7 @@
  */ 
 
 //Управление RGB светодиодом для Attiny13A Програмный ШИМ
-#define F_CPU 9600000L
+#define F_CPU 4800000L
 
 
 #include <avr/io.h>
@@ -24,16 +24,16 @@ ISR(TIM0_OVF_vect)
 	// Включаем соответствующий вывод
 	
 	// Красный
-	if (pwm_counter < pwm_r) {PORTB |= (1 << PORTB1); } // PB1
-	else {PORTB &= ~(1 << PORTB1); }                    // PB1
+	if (pwm_counter < pwm_r) {PORTB |= (1 << PORTB3); } // PB3
+	else {PORTB &= ~(1 << PORTB3); }                    // PB3
 	
 	// Зелёный
-	if (pwm_counter < pwm_g){PORTB |= (1 << PORTB2); }  // PB2
-	else {PORTB &= ~(1 << PORTB2); }                    // PB2
+	if (pwm_counter < pwm_g){PORTB |= (1 << PORTB1); }  // PB1
+	else {PORTB &= ~(1 << PORTB1); }                    // PB1
 	
 	// Синий
-	if (pwm_counter < pwm_b){PORTB |= (1 << PORTB3); }  // PB3
-	else {PORTB &= ~(1 << PORTB3); }                    // PB3
+	if (pwm_counter < pwm_b){PORTB |= (1 << PORTB2); }  // PB2
+	else {PORTB &= ~(1 << PORTB2); }                    // PB2
 	
 	// Счётчик
 	pwm_counter++;
@@ -53,9 +53,9 @@ void random_lite (unsigned char reds, unsigned char greens, unsigned char blues)
 		
 		if (blues >= a) {pwm_b = a;}
 		else{pwm_b = blues;}
-		_delay_ms(5);
+		_delay_ms(30);
 	}
-	_delay_ms(10000); // Задержка для свечения
+	_delay_ms(41000); // Задержка для свечения
 	
 	// Уменьшение яркости
 	for (unsigned char a = 255; a > 0; a--)
@@ -68,7 +68,7 @@ void random_lite (unsigned char reds, unsigned char greens, unsigned char blues)
 		
 		if (blues <= a) {pwm_b = blues;}
 		else{pwm_b = a;}
-		_delay_ms(5);
+		_delay_ms(30);
 	}
 	pwm_r = 0;
 	pwm_g = 0;
@@ -82,19 +82,19 @@ void rgb ()
 	{
 		pwm_r = a;
 		pwm_g = 255 - a;
-		_delay_ms(10);
+		_delay_ms(30);
 	}
 	for (unsigned char a = 0; a < 255; a++)
 	{
 		pwm_b = a;
 		pwm_r = 255 - a;
-		_delay_ms(10);
+		_delay_ms(30);
 	}
 	for (unsigned char a = 0; a < 255; a++)
 	{
 		pwm_g = a;
 		pwm_b = 255 - a;
-		_delay_ms(10);
+		_delay_ms(30);
 	}
 }
 
@@ -104,6 +104,24 @@ void rgb ()
 // Реализация через ADC и площадку с наводками напряжения (контакт в воздухе) взятие случайного значения
 // в диапазоне размера массива с цветами
 /*
+Исходный вид массива с цветами
+{255,0,0},      //  0 Красный
+{0,255,0},      //  1 Зелёный
+{0,0,255},      //  2 Синий
+{255,255,255},  //  3 Белый
+{255,255,0},    //  4 Жёлтый
+{255,0,255},    //  5 Фуксия
+{199,21,133},   //  6 MediumVioletRed
+{0,255,127},    //  7 SpringGreen
+{0,255,255},    //  8 Aqua
+{0,139,139},    //  9 DarkCyan
+{0,100,0},      // 10 DarkGreen
+{0,250,154},    // 11 MediumSpringGreen
+{127,255,212},  // 12 Aquamarine
+{0,191,255},    // 13 DeepSkyBlue
+{123,104,238},  // 14 MediumSlateBlue
+{128,0,128}     // 15 Purple
+
 // Иннициализация АЦП
 void ACD_ini ()
 {
@@ -122,26 +140,25 @@ unsigned char random_ADC ()
 }
 */
 
-unsigned char rand_digit [10] = {0, 5, 7, 10, 4, 10, 6, 2, 13, 9};
 
 unsigned char color_mass [16][3] =
 {
-	{255,0,0},      //  0 Красный
-	{0,255,0},      //  1 Зелёный
-	{0,0,255},      //  2 Синий
-	{255,255,255},  //  3 Белый
-	{255,255,0},    //  4 Жёлтый
-	{255,0,255},    //  5 Фуксия
-	{199,21,133},   //  6 MediumVioletRed
 	{0,255,127},    //  7 SpringGreen
+	{255,255,0},    //  4 Жёлтый
+	{0,139,139},    //  9 DarkCyan
+	{0,0,255},      //  2 Синий
+	{123,104,238},  // 14 MediumSlateBlue
+	{128,0,128},     // 15 Purple
+	{199,21,133},   //  6 MediumVioletRed
+	{0,191,255},    // 13 DeepSkyBlue
 	{0,255,255},    //  8 Aqua
-	{0,139,139},    //  9 DarkCyan	
-	{0,100,0},      // 10 DarkGreen
 	{0,250,154},    // 11 MediumSpringGreen
 	{127,255,212},  // 12 Aquamarine
-	{0,191,255},    // 13 DeepSkyBlue
-	{123,104,238},  // 14 MediumSlateBlue
-	{128,0,128}     // 15 Purple
+	{255,0,0},    //  0 Красный
+	{0,255,0},      //  1 Зелёный
+	{255,0,255},   //  5 Фуксия
+	{0,100,0},      // 10 DarkGreen
+	{255,255,255},  //  3 Белый
 };
 
 unsigned char number_color = 0;
